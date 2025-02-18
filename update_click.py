@@ -1,13 +1,13 @@
 import time
-from pynput import mouse
+from pynput import mouse, keyboard
 from pynput.mouse import Controller
 import threading
 
 # Create an instance of Controller to control the mouse
 mouse_controller = Controller()
 
-# Last time the mouse was moved
-last_move_time = time.time()
+# Last time the mouse was moved or a key was pressed
+last_activity_time = time.time()
 
 # Define the screen coordinates for bottom right (you may need to adjust this based on your screen resolution)
 screen_width = 1920  # Adjust based on your screen resolution
@@ -26,20 +26,29 @@ def click_bottom_right():
 
 # Function to detect mouse movement
 def on_move(x, y):
-    global last_move_time
-    last_move_time = time.time()  # Reset the last move time when mouse is moved
+    global last_activity_time
+    last_activity_time = time.time()  # Reset the last activity time when mouse is moved
+
+# Function to detect key press
+def on_press(key):
+    global last_activity_time
+    last_activity_time = time.time()  # Reset the last activity time when any key is pressed
 
 # Function to monitor mouse idle time and click if necessary
 def monitor_idle_time():
     while True:
         time.sleep(1)  # Check every second
-        if time.time() - last_move_time >= idle_time:
+        if time.time() - last_activity_time >= idle_time:
             click_bottom_right()
             time.sleep(idle_time)  # Wait for the next cycle of checking
 
 # Set up the listener for mouse movement
-listener = mouse.Listener(on_move=on_move)
-listener.start()
+mouse_listener = mouse.Listener(on_move=on_move)
+mouse_listener.start()
+
+# Set up the listener for keyboard activity
+keyboard_listener = keyboard.Listener(on_press=on_press)
+keyboard_listener.start()
 
 # Start the thread to monitor idle time and click if necessary
 monitor_thread = threading.Thread(target=monitor_idle_time)
