@@ -15,6 +15,12 @@ Ensure you have Python installed along with the required dependencies:
 pip install pynput
 ```
 
+if not installed then try this command
+
+```bash
+pip install --break-system-packages pynput
+```
+
 ## Usage
 1. Clone or download this script.
 2. Adjust `screen_width` and `screen_height` if needed to match your screen resolution.
